@@ -21,7 +21,7 @@
 		<button ng-click='projCtrl.showProjHist()'>show project history</button>
 		<div>
 			<ul>
-				<li ng-repeat="version in projCtrl.projectArray | orderBy:'-date' track by $index">
+				<li ng-repeat="version in projCtrl.publishedVersions() | orderBy:'-date' track by $index">
 					<button ng-class="$index === projCtrl.lastProjectIndex && projCtrl.showIframe ? 'selected': 'notSelected';" ng-click='projCtrl.selectVersion($index)'>{{version.date | date:"medium"}}</button>
 				</li>
 			</ul>
