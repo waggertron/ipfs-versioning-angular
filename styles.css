@@ -1,0 +1,15 @@
+.ace_editor { min-height: 200px; }
+ul li {
+  display: inline;
+}
+iframe {
+  width: 90%;
+  height: 800px;
+}
+button {
+  border-radius: 8px;
+  background-color: white;
+}
+button.selected {
+  background-color: lightblue;
+}
