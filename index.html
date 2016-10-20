@@ -8,35 +8,48 @@
 <body ng-app='myApp'>
 	<h1>display working</h1>
 	<div ng-controller="ProjectController as projCtrl">
-		<div ng-model='projCtrl.content' ui-ace="{
-  useWrapMode : true,
-  showGutter: true,
-  mode: 'html',
-  onLoad: aceLoaded,
-  onChange: aceChanged
-}">
-
+		<div ng-if="projCtrl.showEditor" ng-model='projCtrl.content' ui-ace="projCtrl.aceOptions">
 		</div>
-		<button ng-click='projCtrl.getContent()'>load test</button>
-		<button ng-click='projCtrl.showProjHist()'>show project history</button>
+		<div id="outer" ng-if="projCtrl.showMedia">
+			<div id="inner">
+				<iframe ng-src='{{projCtrl.getMediaContentUrl()}}' frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+			</div>
+		</div>
+		<!--<div class="mediaContentWrapper" ng-if="projCtrl.showMedia">
+			<iframe ng-src='{{projCtrl.getMediaContentUrl()}}' frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
+		</div>-->
 		<div>
 			<ul>
 				<li ng-repeat="version in projCtrl.publishedVersions() | orderBy:'-date' track by $index">
-					<button ng-class="$index === projCtrl.lastProjectIndex && projCtrl.showIframe ? 'selected': 'notSelected';" ng-click='projCtrl.selectVersion($index)'>{{version.date | date:"medium"}}</button>
+					<button ng-class="$index === projCtrl.lastProjectIndex && projCtrl.showIframe ? 'selected': 'notSelected';" ng-click='projCtrl.selectVersion($index)'>{{version.date |date:"MM/dd/yyyy 'at' h:mma"}}</button>
 				</li>
 			</ul>
-			<iframe ng-show='projCtrl.showIframe' ng-src='{{projCtrl.currentUrl()}}'></iframe>
+			<div>
+				<ul>
+					<li ng-repeat="file in projCtrl.filesList() track by $index">
+						<p class='file' ng-class="{'changedFile': (file === projCtrl.currentFile())}">
+							<button class="fileButton" ng-click="projCtrl.updateEditorContent($index)">{{file.slice(1)}}</button>
+							<ul>
+								<li ng-repeat="fileVersion in projCtrl.fileVersions(projCtrl.filesList()[$index])">
+									<button ng-click="">
+                    {{fileVersion.date | date:"MM/dd/yyyy 'at' h:mma"}}
+                    </button>
+								</li>
+							</ul>
+						</p>
+					</li>
+				</ul>
+				<iframe class="pagePreview" ng-src='{{projCtrl.currentUrl()}}'></iframe>
+			</div>
 		</div>
 	</div>
-
 	<script type="text/javascript" src="mockdata.js"></script>
 	<script type="text/javascript" src="bower_components/ace-builds/src-min-noconflict/ace.js"></script>
 	<script type="text/javascript" src="bower_components/angular/angular.js"></script>
 	<script type="text/javascript" src="bower_components/angular-ui-ace/ui-ace.js"></script>
-	<script type="text/javascript" src="app.js"></script>
-	<script type="text/javascript" src="ProjectController.js"></script>
 	<script type="text/javascript" src="ProjectService.js"></script>
-
+	<script type="text/javascript" src="ProjectController.js"></script>
+	<script type="text/javascript" src="app.js"></script>
 </body>
 
 </html>
