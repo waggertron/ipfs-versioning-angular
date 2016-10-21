@@ -15,6 +15,7 @@ function projectController($http, ProjectService, $scope) {
   self.showIframe = false;
   self.showEditor = false;
   self.showMedia = false;
+  self.showVersions = {};
 
   self.lastProjectIndex = null;
   self.content = 'hey its working! \n new line as well';
@@ -38,13 +39,7 @@ function projectController($http, ProjectService, $scope) {
   self.aceChanged = function (e) {
     //
   };
-
-  self.changeAceOption = function () {
-
-  }
   self.getContent = function (url) {
-    //mock for now
-    // console.log('get content fired');
 
     $http.get(url).then((res) => {
       self.content = res.data;
@@ -54,7 +49,9 @@ function projectController($http, ProjectService, $scope) {
   }
   self.getMediaContentUrl = () => self.mediaContentUrl;
   self.selectVersion = function (index, file) {
+    self.showVersions = {};
     self.showEditor = false;
+    self.showMedia = false;
     ProjectService.changeSelectedVersion(index);
     //temp, take out with file version history
     $http.get(self.getContentUrl(file)).then((res) => {
@@ -66,6 +63,14 @@ function projectController($http, ProjectService, $scope) {
       self.showIframe = true;
     }
     self.lastProjectIndex = index;
+  }
+  self.isImage = (file) => {
+    let imageTester = /(\.jpeg$)|(\.jpg$)|(\.png$)|(\.gif$)|(\.json$)|(\.md$)|(\.log$)/i;
+    return imageTester.test(file);
+  }
+  self.isText = (file) => {
+    let textTester = /(\.html$)|(\.js$)|(\.css$)|(\.txt$)|(\.json$)|(\.md$)|(\.log$)/i;
+    return textTester.test(file);
   }
   self.updateEditorContent = (index, url) => {
     console.log(self.fileVersions(self.filesList()[index]))
@@ -94,28 +99,31 @@ function projectController($http, ProjectService, $scope) {
     self.mediaContentUrl = url;
     self.showMedia = true;
   }
-}
-// self.getFileChangeHistory = (index) => {
-//   console.log(index)
-//   self.filesList()[index];
-// }
-self.getAceMode = (ext) => {
-  let type;
-  switch (ext) {
-    case 'js':
-      type = 'javascript';
-      break;
-    case 'html':
-      type = '';
-      break;
-    case 'css':
-      type = '';
-      break;
-    case 'json':
-      type = '';
-      break;
-    default:
-      type = '';
+  self.toggleShowVersions = (index) => {
+    if (!self.showVersions[index]) {
+      self.showVersions[index] = true;
+    } else {
+      self.showVersions[index] = false;
+    }
   }
-  return type;
+  self.getAceMode = (ext) => {
+    let type;
+    switch (ext) {
+      case 'js':
+        type = 'javascript';
+        break;
+      case 'html':
+        type = '';
+        break;
+      case 'css':
+        type = '';
+        break;
+      case 'json':
+        type = '';
+        break;
+      default:
+        type = '';
+    }
+    return type;
+  }
 }

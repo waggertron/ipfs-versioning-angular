@@ -8,13 +8,10 @@
 <body ng-app='myApp'>
 	<h1>display working</h1>
 	<div ng-controller="ProjectController as projCtrl">
-		<div ng-if="projCtrl.showEditor" ng-model='projCtrl.content' ui-ace="projCtrl.aceOptions">
-		</div>
-		<div id="outer" ng-if="projCtrl.showMedia">
-			<div id="inner">
-				<iframe ng-src='{{projCtrl.getMediaContentUrl()}}' frameborder="0" allowfullscreen="allowfullscreen"></iframe>
-			</div>
-		</div>
+
+		<!--<div id="outer" ng-if="projCtrl.showMedia">
+				<img ng-src='{{projCtrl.getMediaContentUrl()}}' />
+		</div>-->
 		<!--<div class="mediaContentWrapper" ng-if="projCtrl.showMedia">
 			<iframe ng-src='{{projCtrl.getMediaContentUrl()}}' frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
 		</div>-->
@@ -24,19 +21,10 @@
 					<button ng-class="$index === projCtrl.lastProjectIndex && projCtrl.showIframe ? 'selected': 'notSelected';" ng-click='projCtrl.selectVersion($index)'>{{version.date |date:"MM/dd/yyyy 'at' h:mma"}}</button>
 				</li>
 			</ul>
-			<div>
+			<div ng-if="true">
 				<ul>
 					<li ng-repeat="file in projCtrl.filesList() track by $index">
-						<p class='file' ng-class="{'changedFile': (file === projCtrl.currentFile())}">
-							<button class="fileButton" ng-click="projCtrl.updateEditorContent($index)">{{file.slice(1)}}</button>
-							<ul>
-								<li ng-repeat="fileVersion in projCtrl.fileVersions(projCtrl.filesList()[$index])">
-									<button ng-click="">
-                    {{fileVersion.date | date:"MM/dd/yyyy 'at' h:mma"}}
-                    </button>
-								</li>
-							</ul>
-						</p>
+						<file-version data-file="{{file}}"></file-version>
 					</li>
 				</ul>
 				<iframe class="pagePreview" ng-src='{{projCtrl.currentUrl()}}'></iframe>
