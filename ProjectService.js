@@ -53,7 +53,8 @@ function projectService($http, $q) {
   }
   this.selectedVersionFilesList = () => this.selectedVersion.files;
   this.data = testData
-  this.publishedProject = 'Dispersion'
+  this.publishedProject = 'Dispersion';
+  this.currentProject = () => this.publishedProject;
   this.projectArray = this.data[this.publishedProject];
   this.newestVersion = this.projectArray[this.projectArrayLength()];
   this.selectedVersion = this.newestVersion;

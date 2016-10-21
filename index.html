@@ -6,15 +6,9 @@
 </head>
 
 <body ng-app='myApp'>
-	<h1>display working</h1>
-	<div ng-controller="ProjectController as projCtrl">
 
-		<!--<div id="outer" ng-if="projCtrl.showMedia">
-				<img ng-src='{{projCtrl.getMediaContentUrl()}}' />
-		</div>-->
-		<!--<div class="mediaContentWrapper" ng-if="projCtrl.showMedia">
-			<iframe ng-src='{{projCtrl.getMediaContentUrl()}}' frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
-		</div>-->
+	<div ng-controller="ProjectController as projCtrl">
+		<h1>{{projCtrl.currentProject()}}</h1>
 		<div>
 			<ul>
 				<li ng-repeat="version in projCtrl.publishedVersions() | orderBy:'-date' track by $index">
@@ -24,9 +18,11 @@
 			<div ng-if="true">
 				<ul>
 					<li ng-repeat="file in projCtrl.filesList() track by $index">
-						<file-version data-file="{{file}}"></file-version>
+						<file-history></file-history>
+						<!--<file-history data-file="{{file}}" data-index={{$index}}></file-history>-->
 					</li>
 				</ul>
+
 				<iframe class="pagePreview" ng-src='{{projCtrl.currentUrl()}}'></iframe>
 			</div>
 		</div>
@@ -36,6 +32,9 @@
 	<script type="text/javascript" src="bower_components/angular/angular.js"></script>
 	<script type="text/javascript" src="bower_components/angular-ui-ace/ui-ace.js"></script>
 	<script type="text/javascript" src="ProjectService.js"></script>
+	<script type="text/javascript" src="FileHistoryFactory.js"></script>
+	<script type="text/javascript" src="FileHistoryDirective.js"></script>
+	<script type="text/javascript" src="FileHistoryController.js"></script>
 	<script type="text/javascript" src="ProjectController.js"></script>
 	<script type="text/javascript" src="app.js"></script>
 </body>
