@@ -13,15 +13,7 @@ function projectService($http, $q) {
       return version.publish
     });
   }
-  /** takes in a file string, returns array of event objects that were files changes, not publish events */
-  this.fileChangedVersions = (file) => {
-    return this.projectArray.filter((version) => {
-      if (file) {
-        if (file[0] !== '/') file = '/' + file;
-        return version.changed === file;
-      }
-    });
-  }
+
   /** returns the url of the currently selected project version */
   this.currentUrl = (file) => {
     if (!file) {
@@ -41,11 +33,11 @@ function projectService($http, $q) {
   this.changeSelectedVersion = (index) => {
     //will need to change to account for unpublished projects
     this.selectedVersion = this.publishedProjectVersions()[this.publishedArrayLength() - index];
-    console.log('this.selctedversion: ', this.selectedVersion);
+    // console.log('this.selctedversion: ', this.selectedVersion);
     // this.currentUrl = this.selectedVersion.url;
-    console.log('this.currenturl: ', this.currentUrl());
+    // console.log('this.currenturl: ', this.currentUrl());
     // this.currentFile = this.selectedVersion.changed;
-    console.log('this.currentFile: ', this.currentFile());
+    // console.log('this.currentFile: ', this.currentFile());
   }
 
   this.getContentUrl = () => {

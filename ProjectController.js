@@ -8,18 +8,23 @@ function projectController($http, ProjectService, $scope) {
   self.selectedVersion = ProjectService.selectedVersion;
   self.currentFile = ProjectService.currentFile;//function
   self.currentUrl = ProjectService.currentUrl; //function
-  self.getContentUrl = ProjectService.getContentUrl; //function 
+
   self.filesList = ProjectService.selectedVersionFilesList;//function
   self.fileVersions = ProjectService.fileChangedVersions; //function
   self.mediaContentUrl = ''
   self.showIframe = false;
   self.showEditor = false;
   self.showMedia = false;
-  self.showVersions = {};
+  self.showFiles = false;
+  self.toggleShowFiles = (index) => {
+    self.showFiles = self.lastVersionIndex === undefined || index !== self.lastVersionIndex ? true : !self.showFiles;
+    self.lastVersionIndex = index;
+  }
+  // self.showVersions = self.filesList().map(() => false);
+  // self.toggleShowVersions = (index) => {
 
-  self.lastProjectIndex = null;
-  self.content = 'hey its working! \n new line as well';
-
+  //   self.showVersions[index] = !self.showVersions[index]
+  // }
   self.getContent = function (url) {
 
     $http.get(url).then((res) => {
@@ -28,17 +33,18 @@ function projectController($http, ProjectService, $scope) {
       self.showEditor = true;
     });
   }
+  self.preview = false;
+  self.togglePreview = () => {
+    self.preview = !self.preview;
+  }
   self.getMediaContentUrl = () => self.mediaContentUrl;
-  self.currentProject = ProjectService.currentProject;
-  self.selectVersion = function (index, file) {
+  self.currentProject = ProjectService.currentProject;//function
+  //clean this function up
+  self.selectVersion = function (index) {
     self.showVersions = {};
     self.showEditor = false;
     self.showMedia = false;
     ProjectService.changeSelectedVersion(index);
-    //temp, take out with file version history
-    $http.get(self.getContentUrl(file)).then((res) => {
-      self.content = res.data;
-    })
     if (self.showIframe && self.lastProjectIndex !== null && index === self.lastProjectIndex) {
       self.showIframe = false;
     } else {
@@ -46,31 +52,5 @@ function projectController($http, ProjectService, $scope) {
     }
     self.lastProjectIndex = index;
   }
-  self.toggleShowVersions = (index) => {
-    if (!self.showVersions[index]) {
-      self.showVersions[index] = true;
-    } else {
-      self.showVersions[index] = false;
-    }
-  }
-  self.getAceMode = (ext) => {
-    let type;
-    switch (ext) {
-      case 'js':
-        type = 'javascript';
-        break;
-      case 'html':
-        type = '';
-        break;
-      case 'css':
-        type = '';
-        break;
-      case 'json':
-        type = '';
-        break;
-      default:
-        type = '';
-    }
-    return type;
-  }
+
 }

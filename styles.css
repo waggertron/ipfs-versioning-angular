@@ -46,3 +46,23 @@ button.selected {
   max-height: 900px;
   max-width: 600px;
 }
+.fileVersion {
+  margin: 0;
+  font-size: .4em;
+  text-decoration: none;
+  background-color: #ddd;
+
+}
+
+.fileVersionListItem {
+  margin: 0;
+  padding: 0;
+}
+.fileVersionList {
+  padding: 0;
+}
+.editor {
+  width: 60%;
+  min-height: 400px;
+  max-height: 800px; 
+}
