@@ -5,35 +5,9 @@ function fileHistoryController(ProjectService, $scope, $http, FileHistoryFactory
   $scope.showInfo = false;
   $scope.showEditor = false;
   $scope.showMedia = false;
+  $scope.ext = $scope.filename.split('.').pop();
   $scope.previousEditorContent = '';
   $scope.theme = 'monokai';
-  $scope.updateEditorMode = function () {
-    console.log('filename on line 11', $scope.filename)
-    let textTester = /(\.html$)|(\.js$)|(\.css$)|(\.txt$)|(\.json$)|(\.md$)|(\.log$)/;
-    // let text = textTester.test($scope.filename);
-    let type = textTester.exec($scope.filename)[0].slice(1);
-    console.log(type);
-    // if (text) {
-    //   type = textTester.exec(filename)[0].slice(1);
-    // }
-    console.log($scope.getAceMode(type))
-    $scope.mode = $scope.getAceMode(type);
-  }
-  $scope.getAceMode = function (ext) {
-    let type;
-    switch (ext) {
-      case 'js':
-        return 'javascript';
-      case 'html':
-        return '';
-      case 'css':
-        return '';
-      case 'json':
-        return 'json';
-      default:
-        return '';
-    }
-  }
   $scope.modes = [
     'abap',
     'actionscript',
@@ -154,16 +128,7 @@ function fileHistoryController(ProjectService, $scope, $http, FileHistoryFactory
     'xquery',
     'yaml',
   ];
-  $scope.mode = $scope.updateEditorMode();
   $scope.projectobj = JSON.parse($scope.projectobject);
-  $scope.isImage = (file) => {
-    let imageTester = /(\.jpeg$)|(\.jpg$)|(\.png$)|(\.gif$)|(\.json$)|(\.md$)|(\.log$)/i;
-    return imageTester.test(file);
-  }
-  $scope.isText = (file) => {
-    let textTester = /(\.html$)|(\.js$)|(\.css$)|(\.txt$)|(\.json$)|(\.md$)|(\.log$)/i;
-    return textTester.test(file);
-  }
   $scope.versions = () => FileHistoryFactory.fileHistory($scope.filename);
   $scope.fileHistoryVersions = $scope.versions().sort((a, b) => {
     return (new Date(b.date) - new Date(a.date));
@@ -182,8 +147,6 @@ function fileHistoryController(ProjectService, $scope, $http, FileHistoryFactory
     $scope.showInfo = !$scope.showInfo;
   }
   $scope.makeNewHistoryObj = () => {
-    console.log('historyObj data:')
-    console.log($scope.editorContent)
     return {
       date: new Date(),
       data: $scope.editorContent,
@@ -203,16 +166,35 @@ function fileHistoryController(ProjectService, $scope, $http, FileHistoryFactory
     // console.log('after push, file history versions \n\n\n\n', $scope.fileHistoryVersions);
 
   }
+  $scope.recordIndex = function (index) {
+    console.log(index)
+    $scope.openVersionIndex = index;
+  }
+  $scope.delete = function () {
+    //update to change in extended full app data store model
+    console.log('filehistoryversions:', $scope.fileHistoryVersions)
+    console.log($scope.openVersionIndex);
+    console.log('deleteitem:', $scope.fileHistoryVersions[$scope.openVersionIndex])
+    let deleteItem = $scope.fileHistoryVersions[$scope.openVersionIndex]
+    if (confirm('Are you sure you wish to delete: ', $scope.filename.slice(1), deleteItem.date)) {
+      $scope.fileHistoryVersions.splice($scope.openVersionIndex, 1);
+    }
+    $scope.aceEditor.setValue('');
+    $scope.openVersionIndex = 0;
+    $scope.updateEditorContent(0, $scope.fileHistoryVersions[0]);
+  }
   $scope.aceEditor;
   $scope.aceLoaded = function (_editor) {
+    _editor.$blockScrolling = Infinity;
     $scope.aceEditor = _editor;
-    var _session = _editor.getSession();
+
+
     $scope.renderer = _editor.renderer;
-    $scope.session = _session;
-    _session.setUndoManager(new ace.UndoManager());
+    $scope.session = _editor.getSession();
+    $scope.session.setUndoManager(new ace.UndoManager());
     _editor.on("changeSession", function (e) {
     })
-    _session.on("change", function (e) {
+    $scope.session.on("change", function (e) {
       $scope.editorContent = $scope.session.getValue()
     })
   }
@@ -221,25 +203,27 @@ function fileHistoryController(ProjectService, $scope, $http, FileHistoryFactory
   };
   $scope.updateEditorContent = function (index = 0, file) {
     // console.log($scope.aceEditor);
+    if (!$scope.image) {
+      let version = file ? file : $scope.fileHistoryVersions[index];
 
-    let version = file ? file : $scope.fileHistoryVersions[index];
+      // console.log(version);
 
-    // console.log(version);
-    if (version && version.data) {
-      // $scope.editorContent = version.data;
-      $scope.aceEditor.setValue(version.data)
-      console.log($scope.updateEditorMode($scope.filename));
-      $scope.showEditor = true;
-    } else {
-      // $scope.showEditor = false;
-      console.log('editorContetn: \n', $scope.editorContent)
-      $http.get(version.url + $scope.filename).then((res) => {
-        // console.log('http called for ', version.url + $scope.filename)
-        $scope.fileHistoryVersions[index].data = res.data;
-        $scope.previousEditorContent = $scope.editorContent;
-        $scope.editorContent = res.data;
+      if (version && version.data) {
+        // $scope.editorContent = version.data;
+        $scope.aceEditor.setValue(version.data)
         $scope.showEditor = true;
-      });
+      } else {
+        if (version && version.url) {
+          $http.get(version.url + $scope.filename).then((res) => {
+            // console.log('http called for ', version.url + $scope.filename)
+            $scope.fileHistoryVersions[index].data = res.data;
+            $scope.previousEditorContent = $scope.editorContent;
+            $scope.editorContent = res.data;
+            $scope.showEditor = true;
+          });
+        }
+        // $scope.showEditor = false;
+      }
     }
   }
   $scope.clearEditor = function () {
@@ -254,9 +238,6 @@ function fileHistoryController(ProjectService, $scope, $http, FileHistoryFactory
     $scope.editorContent = $scope.previousEditorContent;
   }
 
-  // $scope.mode = $scope.modes[$scope.updateEditorMode($scope.filename)];
-  // $scope.mode = 'html';
-  // $scope.session.setMode('html')
   $scope.getMediaContent = (url) => {
 
     $scope.showEditor = false;

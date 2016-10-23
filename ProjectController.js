@@ -20,19 +20,6 @@ function projectController($http, ProjectService, $scope) {
     self.showFiles = self.lastVersionIndex === undefined || index !== self.lastVersionIndex ? true : !self.showFiles;
     self.lastVersionIndex = index;
   }
-  // self.showVersions = self.filesList().map(() => false);
-  // self.toggleShowVersions = (index) => {
-
-  //   self.showVersions[index] = !self.showVersions[index]
-  // }
-  self.getContent = function (url) {
-
-    $http.get(url).then((res) => {
-      self.content = res.data;
-      self.showMedia = false;
-      self.showEditor = true;
-    });
-  }
   self.preview = false;
   self.togglePreview = () => {
     self.preview = !self.preview;
@@ -41,9 +28,6 @@ function projectController($http, ProjectService, $scope) {
   self.currentProject = ProjectService.currentProject;//function
   //clean this function up
   self.selectVersion = function (index) {
-    self.showVersions = {};
-    self.showEditor = false;
-    self.showMedia = false;
     ProjectService.changeSelectedVersion(index);
     if (self.showIframe && self.lastProjectIndex !== null && index === self.lastProjectIndex) {
       self.showIframe = false;
@@ -52,5 +36,27 @@ function projectController($http, ProjectService, $scope) {
     }
     self.lastProjectIndex = index;
   }
-
+  self.getMode = function (filename) {
+    let textTester = /(\.html$)|(\.js$)|(\.css$)|(\.txt$)|(\.json$)|(\.md$)|(\.log$)/gmi;
+    let text = textTester.test(filename);
+    return text ? self.getAceMode(filename.split('.').pop()) : false;
+  }
+  self.getAceMode = function (ext) {
+    switch (ext) {
+      case 'js':
+        return 'javascript';
+      case 'html':
+        return 'html';
+      case 'css':
+        return 'css';
+      case 'json':
+        return 'json';
+      default:
+        return '';
+    }
+  }
+  self.isImage = (file) => {
+    let imageTester = /(\.jpeg$)|(\.jpg$)|(\.png$)|(\.gif$)|(\.json$)|(\.md$)|(\.log$)/i;
+    return imageTester.test(file);
+  }
 }

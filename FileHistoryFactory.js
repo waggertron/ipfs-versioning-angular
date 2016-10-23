@@ -10,7 +10,7 @@ function fileHistoryFactory(ProjectService) {
     return historyArray.filter((version) => {
       if (file) {
         if (file[0] !== '/') file = '/' + file;
-        return version.changed === file;
+        return version.changed === file && version.files.includes(file);
       }
     });
   }
