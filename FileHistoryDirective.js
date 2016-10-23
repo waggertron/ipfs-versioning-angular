@@ -16,12 +16,25 @@ let FileHistoryPartial =
     <button ng-click="saveFile()">Save</button>
     <button ng-click="clearEditor()">Clear</button>
     <button ng-click="undo()">Undo</button>
-    <select ng-options="theme as theme for theme in themes" ng-model="aceOptions.theme"></select>
-    <select ng-options="mode as mode for mode in modes" ng-model="aceOptions.mode"></select>
-    <div class="editor" ng-if="showEditor && isText" ng-model="editorContent" ui-ace="aceOptions"></div>
+    <select ng-options="theme as theme for theme in themes" ng-model="theme"></select>
+    <select ng-options="mode as mode for mode in modes" ng-model="mode"></select>
+    <div class="editor" ng-show="showEditor && isText" ng-model="editorContent" ui-ace="{
+    useWrapMode: true,
+    showGutter: true,
+    onLoad: aceLoaded,
+    onChange: aceChanged,
+    theme:  theme,
+    mode: {mode},
+   require: ['ace/ext/language_tools'],
+  advanced: {
+      enableSnippets: true,
+      enableBasicAutocompletion: true,
+      enableLiveAutocompletion: true
+  }
+  }"></div>
     <button>Save</button>
     <button>Delete</button>
-    <p>{{editorContent}}
+    <p>{{mode}}</p>
     <div id="outer" ng-show="isImage(filename)">
       <img ng-if="isImage(filename)" ng-src='{{getMediaContentUrl(filename)}}' />
     </div>
